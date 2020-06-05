@@ -1,0 +1,25 @@
+{
+  "plugins": [
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    "@babel/plugin-proposal-function-sent",
+    "@babel/plugin-proposal-export-namespace-from",
+    "@babel/plugin-proposal-numeric-separator",
+    "@babel/plugin-proposal-throw-expressions",
+    ["@babel/plugin-proposal-class-properties", { "loose": false }]
+  ],
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "ie": "11",
+          "edge": "15",
+          "safari": "10",
+          "firefox": "50",
+          "chrome": "49"
+        }
+      }
+    ],
+    "@babel/preset-react"
+  ]
+}
