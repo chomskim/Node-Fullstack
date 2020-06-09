@@ -3,6 +3,10 @@ import logger from '../../helpers/logger';
 let posts = [{
   id: 2,
   text: 'Lorem ipsum',
+  user: {
+    avatar: '/uploads/avatar1.png',
+    username: 'Test User'
+  }
 },
 {
   id: 1,
@@ -38,6 +42,11 @@ export default function resolver() {
       users(chat, args, context) {
         return chat.getUsers();
       },
+      lastMessage(chat, args, context) {
+        return chat.getMessages({ limit: 1, order: [['id', 'DESC']] }).then((message) => {
+          return message[0];
+        });
+      },
     },
     RootQuery: {
       posts(root, args, context) {
@@ -59,9 +68,9 @@ export default function resolver() {
           if (!users.length) {
             return [];
           }
-    
+
           const usersRow = users[0];
-     
+
           return Chat.findAll({
             include: [{
               model: User,
@@ -73,6 +82,26 @@ export default function resolver() {
             }],
           });
         });
+      },
+      postsFeed(root, { page, limit }, context) {
+        var skip = 0;
+
+        if (page && limit) {
+          skip = page * limit;
+        }
+
+        var query = {
+          order: [['createdAt', 'DESC']],
+          offset: skip,
+        };
+
+        if (limit) {
+          query.limit = limit;
+        }
+
+        return {
+          posts: Post.findAll(query)
+        };
       },
     },
     RootMutation: {
@@ -114,10 +143,10 @@ export default function resolver() {
           level: 'info',
           message: 'Message was created',
         });
-       
+
         return User.findAll().then((users) => {
           const usersRow = users[0];
-       
+
           return Message.create({
             ...message,
           }).then((newMessage) => {
