@@ -3,7 +3,7 @@ module.exports = {
     "username": "graphql",
     "password": "gql2hufs",
     "database": "graphql",
-    "host": "172.30.1.35",
+    "host": "172.30.1.51",
     "dialect": "mysql",
     "operatorsAliases": false,
     "pool": {
