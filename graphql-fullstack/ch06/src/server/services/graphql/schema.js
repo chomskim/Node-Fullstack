@@ -55,7 +55,11 @@ const typeDefinitions = `
     users: [User]
   }
   
-  type RootMutation {
+  type Auth {
+    token: String
+  }
+  
+ type RootMutation {
     addPost (
       post: PostInput!
     ): Post
@@ -72,6 +76,10 @@ const typeDefinitions = `
     deletePost (
       postId: Int!
     ): Response
+    login (
+      email: String!
+      password: String!
+    ): Auth
   }
 
   type RootQuery {
