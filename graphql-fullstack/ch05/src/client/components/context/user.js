@@ -1,27 +1,22 @@
 import React, { Component, createContext } from 'react';
-const { Provider, Consumer } = createContext();
-export class UserProvider extends Component {
-  render() {
-    const { children } = this.props;
-    const user = {
-      username: "Test User",
-      avatar: "/uploads/avatar1.png"
-    };
-    return (
-      <Provider value={user}>
-        {children}
-      </Provider>
-    );
-  }
-}export class UserConsumer extends Component {
+import { ApolloConsumer } from 'react-apollo';
+
+export class UserConsumer extends Component {
   render() {
     const { children } = this.props;
     return (
-      <Consumer>
-        {user => React.Children.map(children, function(child){
-          return React.cloneElement(child, { user });
-        })}
-      </Consumer>
+      <ApolloConsumer>
+        {client => {
+          // Use client.readQuery to get the current logged in user.
+          const user = {
+            username: "Test User2",
+            avatar: "/uploads/avatar2.png"
+          };
+          return React.Children.map(children, function(child){
+            return React.cloneElement(child, { user });
+          });
+        }}
+      </ApolloConsumer>
     )
   }
 }

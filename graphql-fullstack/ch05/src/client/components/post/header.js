@@ -9,7 +9,7 @@ const DeleteButton = ({ deletePost, postId }) =>
     deletePost({ variables: { postId } })
   }}>
     Delete
-    </button>
+  </button>
 
 export default ({ post, changeState }) =>
   <div className="header">
