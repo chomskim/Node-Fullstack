@@ -103,6 +103,32 @@ export default function resolver() {
           posts: Post.findAll(query)
         };
       },
+      usersSearch(root, { page, limit, text }, context) {
+        if (text.length < 3) {
+          return {
+            users: []
+          };
+        }
+        var skip = 0;
+        if (page && limit) {
+          skip = page * limit;
+        }
+        var query = {
+          order: [['createdAt', 'DESC']],
+          offset: skip,
+        };
+        if (limit) {
+          query.limit = limit;
+        }
+        query.where = {
+          username: {
+            [Op.like]: '%' + text + '%'
+          }
+        };
+        return {
+          users: User.findAll(query)
+        };
+      },
     },
     RootMutation: {
       addPost(root, { post }, context) {
@@ -156,6 +182,50 @@ export default function resolver() {
             ]).then(() => {
               return newMessage;
             });
+          });
+        });
+      },
+      updatePost(root, { post, postId }, context) {
+        return Post.update({
+          ...post,
+        },
+          {
+            where: {
+              id: postId
+            }
+          }).then((rows) => {
+            if (rows[0] === 1) {
+              logger.log({
+                level: 'info',
+                message: 'Post ' + postId + ' was updated',
+              });
+
+              return Post.findById(postId);
+            }
+          });
+      },
+      deletePost(root, { postId }, context) {
+        return Post.destroy({
+          where: {
+            id: postId
+          }
+        }).then(function (rows) {
+          if (rows === 1) {
+            logger.log({
+              level: 'info',
+              message: 'Post ' + postId + 'was deleted',
+            });
+            return {
+              success: true
+            };
+          }
+          return {
+            success: false
+          };
+        }, function (err) {
+          logger.log({
+            level: 'error',
+            message: err.message,
           });
         });
       },

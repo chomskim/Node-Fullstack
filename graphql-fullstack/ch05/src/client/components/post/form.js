@@ -24,7 +24,8 @@ export default class PostForm extends Component {
           }
         }
         }>
-          <textarea value={postContent} onChange={self.handlePostContentChange} placeholder="Write your custom post!" />
+          <textarea value={postContent} onChange={self.handlePostContentChange} 
+          placeholder="Write your custom post!" />
           <input type="submit" value="Submit" />
         </form>
       </div>
