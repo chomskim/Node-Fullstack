@@ -40,6 +40,9 @@ export default function resolver() {
       },
     },
     RootQuery: {
+      currentUser(root, args, context) {
+        return context.user;
+      },
       posts(root, args, context) {
         return Post.findAll({ order: [['createdAt', 'DESC']] });
       },
@@ -55,23 +58,15 @@ export default function resolver() {
         });
       },
       chats(root, args, context) {
-        return User.findAll().then((users) => {
-          if (!users.length) {
-            return [];
-          }
-
-          const usersRow = users[0];
-
-          return Chat.findAll({
-            include: [{
-              model: User,
-              required: true,
-              through: { where: { userId: usersRow.id } },
-            },
-            {
-              model: Message,
-            }],
-          });
+        return Chat.findAll({
+          include: [{
+            model: User,
+            required: true,
+            through: { where: { userId: context.user.id } },
+          },
+          {
+            model: Message,
+          }],
         });
       },
       postsFeed(root, { page, limit }, context) {
@@ -229,7 +224,7 @@ export default function resolver() {
         }).then(async (users) => {
           if (users.length = 1) {
             const user = users[0];
-            console.log('user=',user,'user.password=',user.password);
+            console.log('user=', user, 'user.password=', user.password);
             const passwordValid = await bcrypt.compare(password, user.password);
             if (!passwordValid) {
               throw new Error('Password does not match');
@@ -243,6 +238,35 @@ export default function resolver() {
             };
           } else {
             throw new Error("User not found");
+          }
+        });
+      },
+      signup(root, { email, password, username }, context) {
+        return User.findAll({
+          where: {
+            [Op.or]: [{ email }, { username }]
+          },
+          raw: true,
+        }).then(async (users) => {
+          if (users.length) {
+            throw new Error('User already exists');
+          } else {
+            return bcrypt.hash(password, 10).then((hash) => {
+              return User.create({
+                email,
+                password: hash,
+                username,
+                activated: 1,
+              }).then((newUser) => {
+                const token = JWT.sign({ email, id: newUser.id }, JWT_SECRET,
+                  {
+                    expiresIn: '1d'
+                  });
+                return {
+                  token
+                };
+              });
+            });
           }
         });
       },
