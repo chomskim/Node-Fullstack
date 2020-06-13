@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Error from './error';
 import LoginMutation from './mutations/login';
+import RegisterMutation from './mutations/signup';
 
 class LoginForm extends Component {
   state = {
@@ -93,7 +94,9 @@ export default class LoginRegisterForm extends Component {
         {!showLogin && (
           <div>
             <RegisterMutation changeLoginState={changeLoginState}><RegisterForm /></RegisterMutation>
-            <a onClick={() => this.setState({ showLogin: true })}>Want to login? Click here</a>
+            <a onClick={() => this.setState({ showLogin: true })}>
+              Want to login? Click here
+            </a>
           </div>
         )}
       </div>

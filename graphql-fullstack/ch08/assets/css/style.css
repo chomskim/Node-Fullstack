@@ -417,3 +417,16 @@ form [type=submit] {
   float: right;
   margin-top: 10px;
 }
+
+.authModal a {
+  color: red;
+  text-decoration: none;
+}
+
+.authModal a:hover {
+  text-decoration: underline;
+}
+
+.authModal a:visited {
+  color: purple;
+}
