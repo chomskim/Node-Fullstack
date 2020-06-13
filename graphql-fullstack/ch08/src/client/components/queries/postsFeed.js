@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Query } from "react-apollo";
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 import Loading from '../loading';
 import Error from '../error';
-import gql from "graphql-tag";
 
 const GET_POSTS = gql`
-  query postsFeed($page: Int, $limit: Int) { 
-    postsFeed(page: $page, limit: $limit) { 
+  query postsFeed($page: Int, $limit: Int, $username: String) { 
+    postsFeed(page: $page, limit: $limit, username: $username) { 
       posts {
         id
         text
@@ -22,9 +22,9 @@ const GET_POSTS = gql`
 export default class PostsFeedQuery extends Component {
   getVariables() {
     const { variables } = this.props;
-    var query_variables = {
+    const query_variables = {
       page: 0,
-      limit: 10
+      limit: 10,
     };
 
     if (typeof variables !== typeof undefined) {
@@ -33,6 +33,9 @@ export default class PostsFeedQuery extends Component {
       }
       if (typeof variables.limit !== typeof undefined) {
         query_variables.limit = variables.limit;
+      }
+      if (typeof variables.username !== typeof undefined) {
+        query_variables.username = variables.username;
       }
     }
 
@@ -51,11 +54,9 @@ export default class PostsFeedQuery extends Component {
           const { postsFeed } = data;
           const { posts } = postsFeed;
 
-          return React.Children.map(children, function (child) {
-            return React.cloneElement(child, { posts, fetchMore });
-          })
+          return React.Children.map(children, child => React.cloneElement(child, { posts, fetchMore }));
         }}
       </Query>
-    )
+    );
   }
 }

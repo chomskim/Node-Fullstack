@@ -343,7 +343,14 @@ form [type=submit] {
     height: calc(100% - 10px);
 }
 
-.topbar .buttons > * {
+.topbar .buttons {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  height: calc(100% - 10px);
+}
+
+  .topbar .buttons > * {
     height: 100%;
     margin-right: 5px;
     border: none;
@@ -429,4 +436,9 @@ form [type=submit] {
 
 .authModal a:visited {
   color: purple;
+}
+
+.post .header a > * {
+  display: inline-block;
+  vertical-align: middle;
 }

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 
 const GET_POSTS = gql`
     query postsFeed($page: Int, $limit: Int) { 
@@ -35,7 +35,7 @@ export default class DeletePostMutation extends Component {
       <Mutation
         update={(store, { data: { deletePost: { success } } }) => {
           if (success) {
-            var query = {
+            const query = {
               query: GET_POSTS,
             };
             if (typeof variables !== typeof undefined) {
@@ -43,7 +43,8 @@ export default class DeletePostMutation extends Component {
             }
             const data = store.readQuery(query);
 
-            for (var i = 0; i < data.postsFeed.posts.length; i++) {
+            let i=0;
+            for (i = 0; i < data.postsFeed.posts.length; i++) {
               if (data.postsFeed.posts[i].id === postId) {
                 break;
               }
@@ -52,13 +53,12 @@ export default class DeletePostMutation extends Component {
             store.writeQuery({ ...query, data });
           }
         }}
-        mutation={DELETE_POST}>
+        mutation={DELETE_POST}
+      >
         {deletePost =>
-          React.Children.map(children, function (child) {
-            return React.cloneElement(child, { deletePost, postId });
-          })
+          React.Children.map(children, child => React.cloneElement(child, { deletePost, postId }))
         }
       </Mutation>
-    )
+    );
   }
 }

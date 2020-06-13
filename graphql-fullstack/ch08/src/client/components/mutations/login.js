@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Mutation } from "react-apollo";
-import gql from "graphql-tag";
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 
 const LOGIN = gql`
   mutation login($email : String!, $password : String!) {
@@ -20,13 +20,12 @@ export default class LoginMutation extends Component {
             changeLoginState(true);
           }
         }}
-        mutation={LOGIN}>
+        mutation={LOGIN}
+      >
         {(login, { loading, error }) =>
-          React.Children.map(children, function (child) {
-            return React.cloneElement(child, { login, loading, error });
-          })
+          React.Children.map(children, child => React.cloneElement(child, { login, loading, error }))
         }
       </Mutation>
-    )
+    );
   }
 }

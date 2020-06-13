@@ -17,6 +17,6 @@ export default class Feed extends Component {
           <FeedList />
         </PostsQuery>
       </div>
-    )
+    );
   }
 }

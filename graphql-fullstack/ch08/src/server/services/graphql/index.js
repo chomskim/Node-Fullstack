@@ -1,9 +1,10 @@
 import { ApolloServer } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
+import JWT from 'jsonwebtoken';
 import Resolvers from './resolvers';
 import Schema from './schema';
 import auth from './auth';
-import JWT from 'jsonwebtoken';
+
 //const { JWT_SECRET } = process.env;
 const JWT_SECRET = 'awv4BcIzsRysXkhoSAb8t8lNENgXSqBruVlLwd45kGdYjeJHLap9LUJ1t9DTdw36DvLcWs3qEkPyCY6vOyNljlh2Er952h2gDzYwG82rs1qfTzdVIg89KTaQ4SWI1YGY'
 
@@ -24,7 +25,7 @@ export default (utils) => {
         var search = "Bearer";
         var regEx = new RegExp(search, "ig");
         const token = authorization.replace(regEx, '').trim();
-        return JWT.verify(token, JWT_SECRET, function (err, result) {
+        return JWT.verify(token, JWT_SECRET, (err, result) => {
           if (err) {
             return req;
           } else {

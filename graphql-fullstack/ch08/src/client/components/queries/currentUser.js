@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Query } from "react-apollo";
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 import Loading from '../loading';
 import Error from '../error';
-import gql from "graphql-tag";
 
 const GET_CURRENT_USER = gql`
   query currentUser { 
@@ -24,11 +24,9 @@ export default class CurrentUserQuery extends Component {
           if (error) return <Error><p>{error.message}</p></Error>;
 
           const { currentUser } = data;
-          return React.Children.map(children, function (child) {
-            return React.cloneElement(child, { currentUser });
-          })
+          return React.Children.map(children, child => React.cloneElement(child, { currentUser }));
         }}
       </Query>
-    )
+    );
   }
 }

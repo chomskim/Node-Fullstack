@@ -69,14 +69,14 @@ export default function resolver() {
           }],
         });
       },
-      postsFeed(root, { page, limit }, context) {
-        var skip = 0;
+      postsFeed(root, { page, limit, username }, context) {
+        let skip = 0;
 
         if (page && limit) {
           skip = page * limit;
         }
 
-        var query = {
+        const query = {
           order: [['createdAt', 'DESC']],
           offset: skip,
         };
@@ -85,9 +85,21 @@ export default function resolver() {
           query.limit = limit;
         }
 
+        if (typeof username !== typeof undefined) {
+          query.include = [{ model: User }];
+          query.where = { '$User.username$': username };
+        }
+
         return {
           posts: Post.findAll(query)
         };
+      },
+      user(root, { username }, context) {
+        return User.findOne({
+          where: {
+            username: username
+          }
+        });
       },
       usersSearch(root, { page, limit, text }, context) {
         if (text.length < 3) {
@@ -95,11 +107,11 @@ export default function resolver() {
             users: []
           };
         }
-        var skip = 0;
+        let skip = 0;
         if (page && limit) {
           skip = page * limit;
         }
-        var query = {
+        const query = {
           order: [['createdAt', 'DESC']],
           offset: skip,
         };
@@ -222,9 +234,9 @@ export default function resolver() {
           },
           raw: true
         }).then(async (users) => {
-          if (users.length = 1) {
+          if (users.length >= 1) {
             const user = users[0];
-            console.log('user=', user, 'user.password=', user.password);
+            console.log('users.length=', users.length, 'user=', user, 'user.password=', user.password);
             const passwordValid = await bcrypt.compare(password, user.password);
             if (!passwordValid) {
               throw new Error('Password does not match');
