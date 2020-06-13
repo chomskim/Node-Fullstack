@@ -4,9 +4,10 @@ import JWT from 'jsonwebtoken';
 import Resolvers from './resolvers';
 import Schema from './schema';
 import auth from './auth';
+require('dotenv').config()
 
-//const { JWT_SECRET } = process.env;
-const JWT_SECRET = 'awv4BcIzsRysXkhoSAb8t8lNENgXSqBruVlLwd45kGdYjeJHLap9LUJ1t9DTdw36DvLcWs3qEkPyCY6vOyNljlh2Er952h2gDzYwG82rs1qfTzdVIg89KTaQ4SWI1YGY'
+const { JWT_SECRET } = process.env;
+//const JWT_SECRET = 'awv4BcIzsRysXkhoSAb8t8lNENgXSqBruVlLwd45kGdYjeJHLap9LUJ1t9DTdw36DvLcWs3qEkPyCY6vOyNljlh2Er952h2gDzYwG82rs1qfTzdVIg89KTaQ4SWI1YGY'
 
 export default (utils) => {
   const executableSchema = makeExecutableSchema({
