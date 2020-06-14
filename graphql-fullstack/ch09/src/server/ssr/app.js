@@ -5,12 +5,12 @@ import '../../client/components/fontawesome';
 import Router from '../../client/router';
 
 class App extends Component {
-  state = {
-    loggedIn: this.props.loggedIn
-  }
+  state = { loggedIn: this.props.loggedIn }
+
   changeLoginState = (loggedIn) => {
     this.setState({ loggedIn });
   }
+
   render() {
     return (
       <div>
@@ -25,8 +25,8 @@ class App extends Component {
           context={this.props.context}
         />
       </div>
-    )
+    );
   }
 }
 
-export default withApollo(App)
+export default withApollo(App);

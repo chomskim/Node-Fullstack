@@ -1,13 +1,12 @@
-import logger from '../../helpers/logger';
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt';
 import JWT from 'jsonwebtoken';
-require('dotenv').config()
+import logger from '../../helpers/logger';
+
+require('dotenv').config();
 
 const Op = Sequelize.Op;
 const { JWT_SECRET } = process.env;
-//const JWT_SECRET = 'awv4BcIzsRysXkhoSAb8t8lNENgXSqBruVlLwd45kGdYjeJHLap9LUJ1t9DTdw36DvLcWs3qEkPyCY6vOyNljlh2Er952h2gDzYwG82rs1qfTzdVIg89KTaQ4SWI1YGY'
-console.log('JWT_SECRET=', JWT_SECRET);
 
 export default function resolver() {
   const { db } = this;
@@ -35,9 +34,7 @@ export default function resolver() {
         return chat.getUsers();
       },
       lastMessage(chat, args, context) {
-        return chat.getMessages({ limit: 1, order: [['id', 'DESC']] }).then((message) => {
-          return message[0];
-        });
+        return chat.getMessages({ limit: 1, order: [['id', 'DESC']] }).then(message => message[0]);
       },
     },
     RootQuery: {
@@ -91,22 +88,16 @@ export default function resolver() {
           query.where = { '$User.username$': username };
         }
 
-        return {
-          posts: Post.findAll(query)
-        };
+        return { posts: Post.findAll(query) };
       },
       user(root, { username }, context) {
         return User.findOne({
-          where: {
-            username: username
-          }
+          where: { username: username },
         });
       },
       usersSearch(root, { page, limit, text }, context) {
         if (text.length < 3) {
-          return {
-            users: []
-          };
+          return { users: [] };
         }
         let skip = 0;
         if (page && limit) {
@@ -120,13 +111,9 @@ export default function resolver() {
           query.limit = limit;
         }
         query.where = {
-          username: {
-            [Op.like]: '%' + text + '%'
-          }
+          username: { [Op.like]: `%${text}%` },
         };
-        return {
-          users: User.findAll(query)
-        };
+        return { users: User.findAll(query) };
       },
     },
     RootMutation: {
@@ -141,13 +128,9 @@ export default function resolver() {
 
           return Post.create({
             ...post,
-          }).then((newPost) => {
-            return Promise.all([
-              newPost.setUser(usersRow.id),
-            ]).then(() => {
-              return newPost;
-            });
-          });
+          }).then(newPost => Promise.all([
+            newPost.setUser(usersRow.id),
+          ]).then(() => newPost));
         });
       },
       addChat(root, { chat }, context) {
@@ -155,13 +138,9 @@ export default function resolver() {
           level: 'info',
           message: 'Message was created',
         });
-        return Chat.create().then((newChat) => {
-          return Promise.all([
-            newChat.setUsers(chat.users),
-          ]).then(() => {
-            return newChat;
-          });
-        });
+        return Chat.create().then(newChat => Promise.all([
+          newChat.setUsers(chat.users),
+        ]).then(() => newChat));
       },
       addMessage(root, { message }, context) {
         logger.log({
@@ -174,29 +153,19 @@ export default function resolver() {
 
           return Message.create({
             ...message,
-          }).then((newMessage) => {
-            return Promise.all([
-              newMessage.setUser(usersRow.id),
-              newMessage.setChat(message.chatId),
-            ]).then(() => {
-              return newMessage;
-            });
-          });
+          }).then(newMessage => Promise.all([
+            newMessage.setUser(usersRow.id),
+            newMessage.setChat(message.chatId),
+          ]).then(() => newMessage));
         });
       },
       updatePost(root, { post, postId }, context) {
-        return Post.update({
-          ...post,
-        },
-          {
-            where: {
-              id: postId
-            }
-          }).then((rows) => {
+        return Post.update({ ...post }, { where: { id: postId } })
+          .then((rows) => {
             if (rows[0] === 1) {
               logger.log({
                 level: 'info',
-                message: 'Post ' + postId + ' was updated',
+                message: `Post ${postId} was updated`,
               });
 
               return Post.findById(postId);
@@ -204,97 +173,73 @@ export default function resolver() {
           });
       },
       deletePost(root, { postId }, context) {
-        return Post.destroy({
-          where: {
-            id: postId
-          }
-        }).then(function (rows) {
-          if (rows === 1) {
+        return Post.destroy({ where: { id: postId } })
+          .then((rows) => {
+            if (rows === 1) {
+              logger.log({
+                level: 'info',
+                message: `Post ${postId} was deleted`,
+              });
+              return { success: true };
+            }
+            return { success: false };
+          }, (err) => {
             logger.log({
-              level: 'info',
-              message: 'Post ' + postId + 'was deleted',
+              level: 'error',
+              message: err.message,
             });
-            return {
-              success: true
-            };
-          }
-          return {
-            success: false
-          };
-        }, function (err) {
-          logger.log({
-            level: 'error',
-            message: err.message,
           });
-        });
       },
       login(root, { email, password }, context) {
-        return User.findAll({
-          where: {
-            email
-          },
-          raw: true
-        }).then(async (users) => {
-          if (users.length >= 1) {
-            const user = users[0];
-            console.log('users.length=', users.length, 'user=', user, 'user.password=', user.password);
-            const passwordValid = await bcrypt.compare(password, user.password);
-            if (!passwordValid) {
-              throw new Error('Password does not match');
+        return User.findAll({ where: { email }, raw: true })
+          .then(async (users) => {
+            if (users.length >= 1) {
+              const user = users[0];
+              console.log('users.length=', users.length, 'user=', user, 'user.password=', user.password);
+              const passwordValid = await bcrypt.compare(password, user.password);
+              if (!passwordValid) {
+                throw new Error('Password does not match');
+              }
+              const token = JWT.sign({ email, id: user.id }, JWT_SECRET, { expiresIn: '1d' });
+              return { token };
+            } else {
+              throw new Error('User not found');
             }
-            const token = JWT.sign({ email, id: user.id }, JWT_SECRET, {
-              expiresIn: '1d'
-            });
-
-            return {
-              token
-            };
-          } else {
-            throw new Error("User not found");
-          }
-        });
+          });
       },
       signup(root, { email, password, username }, context) {
         return User.findAll({
           where: {
-            [Op.or]: [{ email }, { username }]
+            [Op.or]: [{ email }, { username }],
           },
           raw: true,
         }).then(async (users) => {
           if (users.length) {
             throw new Error('User already exists');
           } else {
-            return bcrypt.hash(password, 10).then((hash) => {
-              return User.create({
+            return bcrypt.hash(password, 10).then(hash =>
+              User.create({
                 email,
                 password: hash,
                 username,
                 activated: 1,
               }).then((newUser) => {
-                const token = JWT.sign({ email, id: newUser.id }, JWT_SECRET,
-                  {
-                    expiresIn: '1d'
-                  });
-                  
+                const token = JWT.sign({ email, id: newUser.id }, JWT_SECRET, { expiresIn: '1d' });
                 const cookieExpiration = 1;
-                var expirationDate = new Date();
-                expirationDate.setDate(
-                  expirationDate.getDate() + cookieExpiration
-                );
+                const expirationDate = new Date();
+                expirationDate.setDate(expirationDate.getDate() + cookieExpiration);
                 context.cookies.set(
                   'authorization',
-                  token, { signed: true, expires: expirationDate, httpOnly: true, secure: false, sameSite: 'strict' }
+                  token,
+                  { signed: true, expires: expirationDate, httpOnly: true, secure: false, sameSite: 'strict' },
                 );
 
-                return {
-                  token
-                };
-              });
-            });
+                return { token };
+              }));
           }
         });
       },
-    }
+    },
   };
 
   return resolvers;

@@ -1,4 +1,3 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     avatar: DataTypes.STRING,
@@ -6,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
   }, {});
-  User.associate = function(models) {
+  User.associate = (models) => {
     User.hasMany(models.Post);
     User.belongsToMany(models.Chat, { through: 'users_chats' });
   };

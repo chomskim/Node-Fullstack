@@ -8,7 +8,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
       if (ctx.user) {
         return await resolve.apply(this, args);
       } else {
-        throw new AuthenticationError("You need to be logged in.");
+        throw new AuthenticationError('You need to be logged in.');
       }
     };
   }

@@ -11,10 +11,11 @@ import JWT from 'jsonwebtoken';
 import servicesLoader from './services';
 import db from './database';
 import ApolloClient from './ssr/apollo';
-import Graphbook from './ssr/';
+import Graphbook from './ssr';
 import template from './ssr/template';
 
 require('dotenv').config();
+
 const { JWT_SECRET } = process.env;
 const utils = { db };
 const services = servicesLoader(utils);
@@ -29,8 +30,8 @@ if (process.env.NODE_ENV === 'production') {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "*.amazonaws.com"]
-    }
+      imgSrc: ["'self'", "data:", "*.amazonaws.com"],
+    },
   }));
   app.use(compress());
   app.use(cors());

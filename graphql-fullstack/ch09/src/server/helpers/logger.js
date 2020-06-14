@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-let transports = [
+const transports = [
   new winston.transports.File({
     filename: 'error.log',
     level: 'error',
@@ -12,7 +12,7 @@ let transports = [
 ];
 
 if (process.env.NODE_ENV !== 'production') {
- transports.push(new winston.transports.Console());
+  transports.push(new winston.transports.Console());
 }
 
 const logger = winston.createLogger({

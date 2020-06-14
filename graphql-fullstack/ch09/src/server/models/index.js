@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 require('dotenv').config();
 
-//if (process.env.NODE_ENV === 'development') {
-// require('babel-plugin-require-context-hook/register')();
-//}
+// if (process.env.NODE_ENV === 'development') {
+//   require('babel-plugin-require-context-hook/register')();
+// }
 if (process.env.NODE_ENV !== 'production') {
   require('babel-plugin-require-context-hook/register')();
 }

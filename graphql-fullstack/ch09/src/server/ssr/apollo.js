@@ -5,14 +5,14 @@ import { ApolloLink } from 'apollo-link';
 import { HttpLink } from 'apollo-link-http';
 import fetch from 'node-fetch';
 
-export default (req) => {
+export default (req, loggedIn) => {
   const AuthLink = (operation, next) => {
     if (loggedIn) {
       operation.setContext(context => ({
         ...context,
         headers: {
           ...context.headers,
-          Authorization: req.cookies.get('authorization')
+          Authorization: req.cookies.get('authorization'),
         },
       }));
     }
@@ -35,10 +35,10 @@ export default (req) => {
       new HttpLink({
         uri: 'http://localhost:8000/graphql',
         credentials: 'same-origin',
-        fetch
-      })
+        fetch,
+      }),
     ]),
     cache: new InMemoryCache(),
   });
   return client;
-};        
+};
