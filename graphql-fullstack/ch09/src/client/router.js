@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import LoginRegisterForm from './components/loginregister';
 import Main from './Main';
 import User from './User';
+
+const ReactRouter = require("react-router-dom");
+let Router;
+if(typeof window !== typeof undefined) {
+  const { BrowserRouter } = ReactRouter;
+  Router = BrowserRouter;
+} else {
+  const { StaticRouter } = ReactRouter;
+  Router = StaticRouter;
+}
+const { Route, Redirect, Switch } = ReactRouter;
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route

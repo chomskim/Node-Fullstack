@@ -7,7 +7,6 @@ require('dotenv').config()
 const Op = Sequelize.Op;
 const { JWT_SECRET } = process.env;
 //const JWT_SECRET = 'awv4BcIzsRysXkhoSAb8t8lNENgXSqBruVlLwd45kGdYjeJHLap9LUJ1t9DTdw36DvLcWs3qEkPyCY6vOyNljlh2Er952h2gDzYwG82rs1qfTzdVIg89KTaQ4SWI1YGY'
-console.log('process.env=',process.env);
 console.log('JWT_SECRET=', JWT_SECRET);
 
 export default function resolver() {
@@ -276,6 +275,17 @@ export default function resolver() {
                   {
                     expiresIn: '1d'
                   });
+                  
+                const cookieExpiration = 1;
+                var expirationDate = new Date();
+                expirationDate.setDate(
+                  expirationDate.getDate() + cookieExpiration
+                );
+                context.cookies.set(
+                  'authorization',
+                  token, { signed: true, expires: expirationDate, httpOnly: true, secure: false, sameSite: 'strict' }
+                );
+
                 return {
                   token
                 };

@@ -283,6 +283,19 @@ export default function resolver() {
           }
         });
       },
+      logout(root, params, context) {
+        context.cookies.set(
+          'authorization',
+          '',
+          {
+            signed: true, expires: new Date(), httpOnly: true, 
+            secure: false, sameSite: 'strict'
+          }
+        );
+        return {
+          message: true
+        };
+      },
     }
   };
 

@@ -88,6 +88,7 @@ const typeDefinitions = `
       email: String!
       password: String!
     ): Auth
+    logout: Response @auth
   }
 
   type RootQuery {
