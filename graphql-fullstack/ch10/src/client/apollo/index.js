@@ -7,7 +7,7 @@ import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { ApolloLink, split } from 'apollo-link';
 
-const protocol = (location.protocol != 'https:') ? 'ws://': 'wss://';
+const protocol = (location.protocol !== 'https:') ? 'ws://': 'wss://';
 const port = location.port ? ':'+location.port: '';
 
 const httpLink = createUploadLink({
@@ -16,10 +16,11 @@ const httpLink = createUploadLink({
 });
 
 const SUBSCRIPTIONS_ENDPOINT = protocol + location.hostname + port + '/subscriptions';
+console.log('SUBSCRIPTIONS_ENDPOINT=', SUBSCRIPTIONS_ENDPOINT);
 const subClient = new SubscriptionClient(SUBSCRIPTIONS_ENDPOINT, {
   reconnect: true,
   connectionParams: () => {
-    var token = localStorage.getItem('jwt');
+    const token = localStorage.getItem('jwt');
     if(token) {
       return { authToken: token };
     }
@@ -68,10 +69,7 @@ const client = new ApolloClient({
       }
     }),
     AuthLink,
-    createUploadLink({
-      uri: 'http://localhost:8000/graphql',
-      credentials: 'same-origin',
-    }),
+    link,
   ]),
   cache: new InMemoryCache().restore(window.__APOLLO_STATE__)
 });

@@ -17,7 +17,7 @@ export class UserConsumer extends Component {
     const { children } = this.props;
     return (
       <ApolloConsumer>
-        {client => {
+        {(client) => {
           const { currentUser } = client.readQuery({ query: GET_CURRENT_USER });
           return React.Children.map(children, child => React.cloneElement(child, { user: currentUser }));
         }}
