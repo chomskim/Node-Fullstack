@@ -9,7 +9,6 @@ require('dotenv').config();
 
 const { JWT_SECRET } = process.env;
 
-
 export default (utils) => (server) => {
   const executableSchema = makeExecutableSchema({
     typeDefs: Schema,
@@ -23,9 +22,28 @@ export default (utils) => (server) => {
     execute,
     subscribe,
     schema: executableSchema,
-  }, 
-  {
-    server,
-    path: '/subscriptions',
-  }); 
+    onConnect: async (params, socket) => {
+      const authorization = params.authToken;
+      if (typeof authorization !== typeof undefined) {
+        const search = "Bearer";
+        const regEx = new RegExp(search, "ig");
+        const token = authorization.replace(regEx, '').trim();
+        return jwt.verify(token, JWT_SECRET, function (err, result) {
+          if (err) {
+            throw new Error('Missing auth token!');
+          } else {
+            return utils.db.models.User.findById(result.id).then((user) => {
+              return Object.assign({}, socket.upgradeReq, { user });
+            });
+          }
+        });
+      } else {
+        throw new Error('Missing auth token!');
+      }
+    },
+  },
+    {
+      server,
+      path: '/subscriptions',
+    });
 }

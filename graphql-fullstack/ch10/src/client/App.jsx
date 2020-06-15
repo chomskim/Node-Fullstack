@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import '../../assets/css/style.css';
 import '@synapsestudios/react-drop-n-crop/lib/react-drop-n-crop.min.css';
 import './components/fontawesome';
+import 'react-toastify/dist/ReactToastify.css';
 import { withApollo } from "react-apollo";
 import Router from './router';
 
