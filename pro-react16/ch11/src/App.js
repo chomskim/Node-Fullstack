@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from "react-dom";
 import { Message } from "./Message";
 import { Summary } from "./Summary";
@@ -15,6 +15,10 @@ function promoteName(name) {
 }
 
 export default function App() {
+  const [counter, setCounter] = useState(0);
+
+  const incrementCounter = (increment) => setCounter(counter + increment);
+
   return (
     <div>
       <h1 className="bg-primary text-white text-center p-2">
@@ -32,7 +36,9 @@ export default function App() {
             <tr key={name}>
               <Summary index={index} name={name}
                 reverseCallback={reverseNames}
-                promoteCallback={promoteName} />
+                promoteCallback={promoteName}
+                counter={counter}
+                incrementCallback={incrementCounter} />
             </tr>
           )}
         </tbody>
