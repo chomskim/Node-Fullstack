@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { ProFeature } from "./ProFeature";
+//import { ProFeature } from "./ProFeature";
 
 export function ProController(FeatureComponent) {
-  const ProtectedFeature = ProFeature(FeatureComponent);
+  //const ProtectedFeature = ProFeature(FeatureComponent);
 
   return class extends Component {
     constructor(props) {
@@ -31,7 +31,7 @@ export function ProController(FeatureComponent) {
           </div>
           <div className="row">
             <div className="col-12">
-              <ProtectedFeature {...this.props}
+              <FeatureComponent {...this.props}
                 pro={this.state.proMode} />
             </div>
           </div>
