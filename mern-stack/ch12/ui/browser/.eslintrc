@@ -1,0 +1,11 @@
+{
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "import/extensions": [ "error", "always", { "ignorePackages": true } ],
+    "react/prop-types": "off",
+    "prefer-destructuring": "off",
+    "react/destructuring-assignment": "off"
+  }
+}
