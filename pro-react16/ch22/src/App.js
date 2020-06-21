@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Provider } from "react-redux";
 import dataStore from "./store";
 import { Selector } from "./Selector";
-import { ProductDisplay } from "./ProductDisplay";
-import { SupplierDisplay } from "./SupplierDisplay";
+//import { ProductDisplay } from "./ProductDisplay";
+//import { SupplierDisplay } from "./SupplierDisplay";
+import { PRODUCTS, SUPPLIERS } from "./store/dataTypes";
 
 export default class App extends Component {
 
@@ -11,8 +12,8 @@ export default class App extends Component {
     return (
       <Provider store={dataStore}>
         <Selector>
-          <ProductDisplay name="Products" />
-          <SupplierDisplay name="Suppliers" />
+          <data name="Products" datatype={PRODUCTS} />
+          <data name="Suppliers" datatype={SUPPLIERS} />
         </Selector>
       </Provider>
     );
