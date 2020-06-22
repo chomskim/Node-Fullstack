@@ -1,5 +1,5 @@
 module.exports = function () {
-  var data = {
+  const data = {
     products: [
       { id: 1, name: "Kayak", category: "Watersports", price: 275 },
       { id: 2, name: "Lifejacket", category: "Watersports", price: 48.95 },
