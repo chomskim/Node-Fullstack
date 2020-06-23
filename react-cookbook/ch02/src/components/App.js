@@ -1,17 +1,18 @@
 import React from 'react';
 import './App.css';
-import Todo from './Todo/Todo';
+//import Todo from './Todo/Todo';
 import Header from '../shared/components/layout/Header';
 import Content from '../shared/components/layout/Content';
 import Footer from '../shared/components/layout/Footer';
+import Timer from './Pomodoro/Timer';
 
 function App() {
   return (
     <div className="App">
-      <Header title="Todo List" />
+      <Header title="Pomodoro Timer" />
 
       <Content>
-        <Todo />
+      <Timer />
       </Content>
 
       <Footer />
