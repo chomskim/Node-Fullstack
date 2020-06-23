@@ -4,7 +4,8 @@ import './App.css';
 import Header from '../shared/components/layout/Header';
 import Content from '../shared/components/layout/Content';
 import Footer from '../shared/components/layout/Footer';
-import Timer from './Pomodoro/Timer';
+//import Timer from './Pomodoro/Timer';
+import Coins from './Coins/Coins';
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
       <Header title="Pomodoro Timer" />
 
       <Content>
-      <Timer />
+      <Coins />
       </Content>
 
       <Footer />
