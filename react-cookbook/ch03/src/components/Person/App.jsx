@@ -1,6 +1,6 @@
 import React from 'react';
-import Helmet from 'react-helmet';
 import Popup from 'react-popup';
+import Helmet from 'react-helmet';
 import Person from './Person';
 import Header from '../../shared/components/layout/Header';
 import Content from '../../shared/components/layout/Content';
