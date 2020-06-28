@@ -45,12 +45,21 @@ const GET_REPOSITORIES_OF_ORGANIZATION = gql`
   }
 `;
 
+const GET_CURRENT_USER = gql`
+  {
+    viewer {
+      login
+      name
+    }
+  }
+`;
+
 client
   .query({
-    query: GET_REPOSITORIES_OF_ORGANIZATION,
-    variables: {
-      organization: 'the-road-to-learn-react',
-    },
+    query: GET_CURRENT_USER,
+    //variables: {
+    //  organization: 'the-road-to-learn-react',
+    //},
   })
   .then(console.log);
 
