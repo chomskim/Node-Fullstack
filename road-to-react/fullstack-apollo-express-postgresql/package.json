@@ -9,17 +9,22 @@
     "apollo-server": "^2.15.1",
     "apollo-server-express": "^2.15.1",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "graphql": "^15.2.0",
+    "graphql": "^14.6.0",
+    "pg": "^8.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "sequelize": "^4.44.4",
+    "uuid": "^8.2.0",
+    "uuidv4": "^6.1.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "nodemon --exec babel-node src/index.js",
+    "test:run-server": "TEST_DATABASE=mytestdatabase npm start",
+    "test:execute-test": "mocha --require @babel/register 'src/**/*.spec.js'",
+    "test": "echo \"No test specified\" && exit 0"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -35,5 +40,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/node": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/register": "^7.10.4",
+    "nodemon": "^2.0.4"
   }
 }
