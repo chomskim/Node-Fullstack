@@ -1,0 +1,11 @@
+build/*
+public/*
+docs/*
+templates/*
+src/react-app-env.d.ts
+src/serviceWorker.ts
+e2e/jest.config.js
+e2e/puppeteer_standalone.js
+e2e/app.test.tsx
+jest-puppeteer.config.js
+node_modules/
