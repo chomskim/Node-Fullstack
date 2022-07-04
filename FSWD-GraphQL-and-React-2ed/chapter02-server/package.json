@@ -1,0 +1,30 @@
+{
+  "name": "chapter02-server",
+  "version": "0.1.0",
+  "description": "Hands-on-Full-Stack-Web-Development-with-GraphQL-and-React-2nd-Edition",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon --exec babel-node --watch src src/index.js"
+  },
+  "author": "cskim",
+  "license": "ISC",
+  "dependencies": {
+    "@graphql-tools/schema": "^8.5.0",
+    "apollo-server-express": "^3.9.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "graphql": "^16.5.0",
+    "helmet": "^5.1.0",
+    "nodemon": "^2.0.18",
+    "winston": "^3.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.6",
+    "@babel/node": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@babel/preset-react": "^7.18.6",
+    "babel-loader": "^8.2.5"
+  }
+}
