@@ -1,186 +1,159 @@
-import logger from '../../helpers/logger';
-import Sequelize from 'sequelize';
-import bcrypt from 'bcrypt';
-import JWT from 'jsonwebtoken';
-import {
-  GraphQLUpload
-} from 'graphql-upload';
-import aws from 'aws-sdk';
+import logger from '../../helpers/logger'
+import Sequelize from 'sequelize'
+import bcrypt from 'bcrypt'
+import JWT from 'jsonwebtoken'
+import { GraphQLUpload } from 'graphql-upload'
+import aws from 'aws-sdk'
 const s3 = new aws.S3({
   signatureVersion: 'v4',
   region: 'eu-central-1',
-});
-const Op = Sequelize.Op;
-const {
-  JWT_SECRET
-} = process.env;
+})
+const Op = Sequelize.Op
+const { JWT_SECRET } = process.env
 
 export default function resolver() {
-  const {
-    db
-  } = this;
-  const {
-    Post,
-    User,
-    Chat,
-    Message
-  } = db.models;
+  const { db } = this
+  const { Post, User, Chat, Message } = db.models
 
   const resolvers = {
     Upload: GraphQLUpload,
     Post: {
       user(post, args, context) {
-        return post.getUser();
+        return post.getUser()
       },
     },
     Message: {
       user(message, args, context) {
-        return message.getUser();
+        return message.getUser()
       },
       chat(message, args, context) {
-        return message.getChat();
+        return message.getChat()
       },
     },
     Chat: {
       lastMessage(chat, args, context) {
-        return chat.getMessages({
-          limit: 1,
-          order: [
-            ['id', 'DESC']
-          ]
-        }).then((message) => {
-          return message[0];
-        });
+        return chat
+          .getMessages({
+            limit: 1,
+            order: [['id', 'DESC']],
+          })
+          .then((message) => {
+            return message[0]
+          })
       },
       messages(chat, args, context) {
         return chat.getMessages({
-          order: [
-            ['id', 'ASC']
-          ]
-        });
+          order: [['id', 'ASC']],
+        })
       },
       users(chat, args, context) {
-        return chat.getUsers();
+        return chat.getUsers()
       },
     },
     RootQuery: {
-      usersSearch(root, {
-        page,
-        limit,
-        text
-      }, context) {
+      usersSearch(root, { page, limit, text }, context) {
         if (text.length < 3) {
           return {
-            users: []
-          };
+            users: [],
+          }
         }
-        var skip = 0;
+        var skip = 0
         if (page && limit) {
-          skip = page * limit;
+          skip = page * limit
         }
         var query = {
-          order: [
-            ['createdAt', 'DESC']
-          ],
+          order: [['createdAt', 'DESC']],
           offset: skip,
-        };
+        }
         if (limit) {
-          query.limit = limit;
+          query.limit = limit
         }
         query.where = {
           username: {
-            [Op.like]: '%' + text + '%'
-          }
-        };
+            [Op.like]: '%' + text + '%',
+          },
+        }
         return {
-          users: User.findAll(query)
-        };
+          users: User.findAll(query),
+        }
       },
-      postsFeed(root, {
-        page,
-        limit
-      }, context) {
-        var skip = 0;
+      postsFeed(root, { page, limit }, context) {
+        var skip = 0
 
         if (page && limit) {
-          skip = page * limit;
+          skip = page * limit
         }
 
         var query = {
-          order: [
-            ['createdAt', 'DESC']
-          ],
+          order: [['createdAt', 'DESC']],
           offset: skip,
-        };
+        }
 
         if (limit) {
-          query.limit = limit;
+          query.limit = limit
         }
 
         return {
-          posts: Post.findAll(query)
-        };
+          posts: Post.findAll(query),
+        }
       },
       posts(root, args, context) {
         return Post.findAll({
-          order: [
-            ['createdAt', 'DESC']
-          ]
-        });
+          order: [['createdAt', 'DESC']],
+        })
       },
       chats(root, args, context) {
         return Chat.findAll({
-          include: [{
+          include: [
+            {
               model: User,
               required: true,
               through: {
                 where: {
-                  userId: context.user.id
-                }
+                  userId: context.user.id,
+                },
               },
             },
             {
               model: Message,
-            }
+            },
           ],
-        });
+        })
       },
-      chat(root, {
-        chatId
-      }, context) {
+      chat(root, { chatId }, context) {
         return Chat.findByPk(chatId, {
-          include: [{
+          include: [
+            {
               model: User,
               required: true,
             },
             {
               model: Message,
-            }
+            },
           ],
-        });
+        })
       },
       currentUser(root, args, context) {
-        return context.user;
+        return context.user
       },
     },
     RootMutation: {
-      signup(root, {
-        email,
-        password,
-        username
-      }, context) {
+      signup(root, { email, password, username }, context) {
         return User.findAll({
           where: {
-            [Op.or]: [{
-              email
-            }, {
-              username
-            }]
+            [Op.or]: [
+              {
+                email,
+              },
+              {
+                username,
+              },
+            ],
           },
           raw: true,
         }).then(async (users) => {
           if (users.length) {
-            throw new Error('User already exists');
+            throw new Error('User already exists')
           } else {
             return bcrypt.hash(password, 10).then((hash) => {
               return User.create({
@@ -189,170 +162,159 @@ export default function resolver() {
                 username,
                 activated: 1,
               }).then((newUser) => {
-                const token = JWT.sign({
-                  email,
-                  id: newUser.id
-                }, JWT_SECRET, {
-                  expiresIn: '1d'
-                });
+                const token = JWT.sign(
+                  {
+                    email,
+                    id: newUser.id,
+                  },
+                  JWT_SECRET,
+                  {
+                    expiresIn: '1d',
+                  }
+                )
                 return {
-                  token
-                };
-              });
-            });
+                  token,
+                }
+              })
+            })
           }
-        });
+        })
       },
-      login(root, {
-        email,
-        password
-      }, context) {
+      login(root, { email, password }, context) {
         return User.findAll({
           where: {
-            email
+            email,
           },
-          raw: true
+          raw: true,
         }).then(async (users) => {
-          if (users.length = 1) {
-            const user = users[0];
-            const passwordValid = await bcrypt.compare(password, user.password);
+          if ((users.length = 1)) {
+            const user = users[0]
+            const passwordValid = await bcrypt.compare(password, user.password)
             if (!passwordValid) {
-              throw new Error('Password does not match');
+              throw new Error('Password does not match')
             }
-            const token = JWT.sign({
-              email,
-              id: user.id
-            }, JWT_SECRET, {
-              expiresIn: '1d'
-            });
+            const token = JWT.sign(
+              {
+                email,
+                id: user.id,
+              },
+              JWT_SECRET,
+              {
+                expiresIn: '1d',
+              }
+            )
 
             return {
-              token
-            };
+              token,
+            }
           } else {
-            throw new Error("User not found");
+            throw new Error('User not found')
           }
-        });
+        })
       },
-      addChat(root, {
-        chat
-      }, context) {
+      addChat(root, { chat }, context) {
         return Chat.create().then((newChat) => {
-          return Promise.all([
-            newChat.setUsers(chat.users),
-          ]).then(() => {
+          return Promise.all([newChat.setUsers(chat.users)]).then(() => {
             logger.log({
               level: 'info',
               message: 'Message was created',
-            });
-            return newChat;
-          });
-        });
+            })
+            return newChat
+          })
+        })
       },
-      addMessage(root, {
-        message
-      }, context) {
+      addMessage(root, { message }, context) {
         return User.findAll().then((users) => {
-          const usersRow = users[0];
+          const usersRow = users[0]
 
           return Message.create({
             ...message,
           }).then((newMessage) => {
-            return Promise.all([
-              newMessage.setUser(usersRow.id),
-              newMessage.setChat(message.chatId),
-            ]).then(() => {
+            return Promise.all([newMessage.setUser(usersRow.id), newMessage.setChat(message.chatId)]).then(() => {
               logger.log({
                 level: 'info',
                 message: 'Message was created',
-              });
-              return newMessage;
-            });
-          });
-        });
+              })
+              return newMessage
+            })
+          })
+        })
       },
-      async uploadAvatar(root, {
-        file
-      }, context) {
-        const {
-          createReadStream,
-          filename,
-          mimetype,
-          encoding
-        } = await file;
-        const bucket = 'apollo-book';
+      async uploadAvatar(root, { file }, context) {
+        const { createReadStream, filename, mimetype, encoding } = await file
+        const bucket = 'apollo-book'
         const params = {
           Bucket: bucket,
           Key: context.user.id + '/' + filename,
           ACL: 'public-read',
-          Body: createReadStream()
-        };
+          Body: createReadStream(),
+        }
 
-        const response = await s3.upload(params).promise();
+        const response = await s3.upload(params).promise()
 
-        return User.update({
-          avatar: response.Location
-        }, {
-          where: {
-            id: context.user.id
+        return User.update(
+          {
+            avatar: response.Location,
+          },
+          {
+            where: {
+              id: context.user.id,
+            },
           }
-        }).then(() => {
+        ).then(() => {
           return {
             filename: filename,
-            url: response.Location
+            url: response.Location,
           }
-        });
+        })
       },
-      addPost(root, {
-        post
-      }, context) {
+      addPost(root, { post }, context) {
         return User.findAll().then((users) => {
-          const usersRow = users[0];
+          const usersRow = users[0]
 
           return Post.create({
             ...post,
           }).then((newPost) => {
-            return Promise.all([
-              newPost.setUser(usersRow.id),
-            ]).then(() => {
+            return Promise.all([newPost.setUser(usersRow.id)]).then(() => {
               logger.log({
                 level: 'info',
                 message: 'Post was created',
-              });
-              return newPost;
-            });
-          });
-        });
+              })
+              return newPost
+            })
+          })
+        })
       },
-      deletePost(root, {
-        postId
-      }, context) {
+      deletePost(root, { postId }, context) {
         return Post.destroy({
           where: {
-            id: postId
-          }
-        }).then(function (rows) {
-          if (rows === 1) {
-            logger.log({
-              level: 'info',
-              message: 'Post ' + postId + 'was deleted',
-            });
+            id: postId,
+          },
+        }).then(
+          function (rows) {
+            if (rows === 1) {
+              logger.log({
+                level: 'info',
+                message: 'Post ' + postId + 'was deleted',
+              })
+              return {
+                success: true,
+              }
+            }
             return {
-              success: true
-            };
+              success: false,
+            }
+          },
+          function (err) {
+            logger.log({
+              level: 'error',
+              message: err.message,
+            })
           }
-          return {
-            success: false
-          };
-        }, function (err) {
-          logger.log({
-            level: 'error',
-            message: err.message,
-          });
-        });
+        )
       },
     },
-  };
+  }
 
-  return resolvers;
+  return resolvers
 }
