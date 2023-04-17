@@ -1,2 +1,0 @@
-components goes here, you can generate with generate-react-cli, examples;
-$ npx generate-react-cli component MyWidget --type=widget

@@ -3,6 +3,4 @@ From
 
 - Pro MERN Stack_Full Stack Web App Development with Mongo, Express, React, and Node 2ed, 2019, Apress
 - Hands-On Full-Stack Web Development with GraphQL and React, 2019, PacktPub
-- Full-Stack Web Development with GraphQL and React 2ed, 2022, PacktPub
 - React Projects 2ed, 2022, PacktPub
-- Integrating D3.js with React, 2022, Apress
